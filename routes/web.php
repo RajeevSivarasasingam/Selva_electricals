@@ -25,6 +25,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureAdmin::class])
     Route::get('/', [AdminController::class, 'index'])->defaults('page', 'dashboard')->name('dashboard');
     Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+    Route::put('/products/{product}', [AdminController::class, 'updateProduct'])->name('products.update');
+    Route::put('/categories/{category}', [AdminController::class, 'updateCategory'])->name('categories.update');
+    Route::delete('/products/{product}', [AdminController::class, 'deleteProduct'])->name('products.destroy');
+    Route::delete('/categories/{category}', [AdminController::class, 'deleteCategory'])->name('categories.destroy');
+    Route::delete('/orders/{quotation}', [AdminController::class, 'deleteOrder'])->name('orders.destroy');
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.destroy');
     foreach (['products', 'categories', 'orders', 'users'] as $page) {
         Route::get('/'.$page, [AdminController::class, 'index'])->defaults('page', $page)->name($page);
     }

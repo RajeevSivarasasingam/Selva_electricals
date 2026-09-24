@@ -727,3 +727,12 @@ html { scroll-padding-top: var(--navigation-height, 180px); }
 .catalog-success a { font-weight: 700; color: inherit; margin-left: 10px; }
 button:disabled { opacity: .5; cursor: not-allowed; }
 @media (max-width: 700px) { .admin-page-heading { flex-wrap: wrap; } .catalog-dialog { padding: 20px; } .catalog-form-columns { grid-template-columns: 1fr; } }
+
+.admin-row-actions { display: flex; align-items: center; gap: 8px; }
+.admin-action-icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid #dce2eb; border-radius: 8px; background: #f4f7fc; color: #23466b; cursor: pointer; transition: background .2s, transform .2s; }
+.admin-action-icon:hover { background: #e3ebf8; transform: translateY(-1px); }
+.admin-action-danger { color: #b42332; background: #fff4f4; border-color: #f0d8dc; }
+.admin-action-danger:hover { background: #ffe4e6; }
+.admin-delete-confirm { background: #b42332; color: white; }
+#admin-results[aria-busy="true"] { opacity: .65; }
+@media (prefers-reduced-motion: reduce) { .admin-action-icon { transition: none; } }

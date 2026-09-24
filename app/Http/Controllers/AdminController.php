@@ -27,7 +27,13 @@ class AdminController extends Controller
             default => Quotation::latest()->limit(5)->get(),
         };
 
+        $editing = null;
+        if ($request->filled('edit') && in_array($page, ['products', 'categories'])) {
+            $editing = ($page === 'products' ? Product::query() : Category::query())->findOrFail($request->integer('edit'));
+        }
+
         return view('admin', [
+            'editing' => $editing,
             'page' => $page,
             'categories' => Category::orderBy('name')->get(),
             'search' => $search,
@@ -41,7 +47,7 @@ class AdminController extends Controller
         ]);
     }
 
-    public function storeCategory(Request $request): RedirectResponse
+    private function saveCategory(Request $request, ?Category $category = null): RedirectResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -49,12 +55,17 @@ class AdminController extends Controller
             'image' => ['required', 'url:http,https', 'max:2048'],
         ]);
         $data['slug'] = (Str::slug($data['name']) ?: 'category').'-'.Str::lower(Str::random(8));
-        Category::create($data);
+        if ($category) {
+            unset($data['slug']);
+            $category->update($data);
+        } else {
+            Category::create($data);
+        }
 
-        return redirect()->route('admin.categories')->with('status', 'Category added. It is now visible on the storefront.');
+        return redirect()->route('admin.categories')->with('status', 'Category saved. The storefront is up to date.');
     }
 
-    public function storeProduct(Request $request): RedirectResponse
+    private function saveProduct(Request $request, ?Product $product = null): RedirectResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -73,8 +84,67 @@ class AdminController extends Controller
         $data['original_price'] = $data['price'];
         $data['price'] = $data['offer_price'] ?? $data['price'];
         unset($data['offer_price']);
-        Product::create($data);
+        if ($product) {
+            unset($data['slug']);
+            $product->update($data);
+        } else {
+            Product::create($data);
+        }
 
-        return redirect()->route('admin.products')->with('status', 'Product added. It is now visible on the storefront.');
+        return redirect()->route('admin.products')->with('status', 'Product saved. The storefront is up to date.');
+    }
+
+    public function storeCategory(Request $request): RedirectResponse
+    {
+        return $this->saveCategory($request);
+    }
+
+    public function updateCategory(Request $request, Category $category): RedirectResponse
+    {
+        return $this->saveCategory($request, $category);
+    }
+
+    public function storeProduct(Request $request): RedirectResponse
+    {
+        return $this->saveProduct($request);
+    }
+
+    public function updateProduct(Request $request, Product $product): RedirectResponse
+    {
+        return $this->saveProduct($request, $product);
+    }
+
+    public function deleteProduct(Product $product): RedirectResponse
+    {
+        $product->delete();
+
+        return redirect()->route('admin.products')->with('status', 'Product deleted.');
+    }
+
+    public function deleteCategory(Category $category): RedirectResponse
+    {
+        if ($category->products()->exists()) {
+            return redirect()->route('admin.categories')->with('status', 'Move or delete the products in this category before deleting it.');
+        }
+        $category->delete();
+
+        return redirect()->route('admin.categories')->with('status', 'Category deleted.');
+    }
+
+    public function deleteOrder(Quotation $quotation): RedirectResponse
+    {
+        $quotation->delete();
+
+        return redirect()->route('admin.orders')->with('status', 'Quotation request deleted.');
+    }
+
+    public function deleteUser(Request $request, User $user): RedirectResponse
+    {
+        if ($user->is_admin || $user->id === $request->user()->id) {
+            return redirect()->route('admin.users')->with('status', 'Administrator accounts cannot be deleted here.');
+        }
+        $user->delete();
+
+        return redirect()->route('admin.users')->with('status', 'User deleted.');
     }
 }

@@ -152,7 +152,7 @@ if (dataElement) {
 
     function productImage(product) {
         const img = element('img');
-        img.src = data.assetBase + '/' + product.image;
+        img.src = product.image;
         img.alt = product.name;
         img.width = 76;
         img.height = 66;
@@ -215,14 +215,16 @@ if (dataElement) {
         openDialog(product.name, 'product');
         const fragment = document.querySelector('#product-detail-template').content.cloneNode(true);
         const img = fragment.querySelector('.detail-image');
-        img.src = data.assetBase + '/' + product.image;
+        img.src = product.image;
         img.alt = product.name;
         fragment.querySelector('.detail-brand').textContent = product.brand;
         fragment.querySelector('.detail-certification').textContent = product.certification;
         fragment.querySelector('.detail-specification').textContent = product.specification;
         fragment.querySelector('.product-price strong').textContent = money(product.price);
         fragment.querySelector('.product-price del').textContent = money(product.original_price);
+        fragment.querySelector('.product-price del').hidden = product.original_price <= product.price;
         fragment.querySelector('[data-detail-add]').dataset.add = id;
+        fragment.querySelector('[data-detail-add]').disabled = product.in_stock === false;
         fragment.querySelector('.detail-whatsapp').href = whatsappUrl('Hello, please confirm price and availability for ' + product.name + '.');
         dialogContent.append(fragment);
     }
@@ -435,3 +437,43 @@ if (dataElement) {
     });
     updateCounters();
 }
+
+const navigationHeader = document.querySelector('.site-header');
+if (navigationHeader) {
+    const updateNavigationHeight = () => {
+        const navigationBar = navigationHeader.querySelector('.navigation-bar');
+        const offset = navigationBar.offsetTop;
+        navigationHeader.style.setProperty('--header-offset', '-' + offset + 'px');
+        document.documentElement.style.setProperty('--navigation-height', (navigationBar.offsetHeight + 16) + 'px');
+    };
+    new ResizeObserver(updateNavigationHeight).observe(navigationHeader);
+    updateNavigationHeight();
+}
+
+const categoryDropdown = document.querySelector('.category-dropdown');
+if (categoryDropdown) {
+    const categoryToggle = categoryDropdown.querySelector('#browse-toggle');
+    const categoryMenu = categoryDropdown.querySelector('#category-menu');
+    const openCategories = () => {
+        categoryMenu.hidden = false;
+        categoryToggle.setAttribute('aria-expanded', 'true');
+    };
+    const closeCategories = () => {
+        categoryMenu.hidden = true;
+        categoryToggle.setAttribute('aria-expanded', 'false');
+    };
+    categoryDropdown.addEventListener('pointerenter', event => {
+        if (event.pointerType === 'mouse') openCategories();
+    });
+    categoryDropdown.addEventListener('pointerleave', () => {
+        if (!categoryDropdown.contains(document.activeElement)) closeCategories();
+    });
+    categoryDropdown.addEventListener('focusin', event => {
+        if (event.target.matches(':focus-visible')) openCategories();
+    });
+    categoryDropdown.addEventListener('focusout', event => {
+        if (!categoryDropdown.contains(event.relatedTarget)) closeCategories();
+    });
+}
+
+

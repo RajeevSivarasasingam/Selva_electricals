@@ -30,8 +30,8 @@
         </section>
         <section class="section trust-section" aria-label="Our commitments"><div class="container feature-grid">@foreach ($store['features'] as $feature)<article class="feature-card"><span class="feature-icon"><x-store-icon :file="$feature['icon']" :size="28" /></span><h2>{{ $feature['title'] }}</h2><p>{{ $feature['description'] }}</p><a href="#services">{{ $feature['label'] }} <x-store-icon :file="$feature['small_icon']" :size="16" /></a></article>@endforeach</div></section>
         <section class="section categories-section" id="categories" aria-labelledby="categories-heading">
-            <div class="container"><div class="section-heading"><div><p class="eyebrow">Full inventory spectrum</p><h2 id="categories-heading">Shop by Category</h2><p>Everything you need for electrical installations, plumbing networks, contractor power<br class="desktop-break"> equipment, and home improvement.</p></div><a href="#category-grid" class="text-link">View All 10 Categories <x-store-icon file="5bab9.svg" :size="16" /></a></div>
-                <div class="category-grid" id="category-grid">@foreach ($store['categories'] as $category)<a class="category-card" href="#products" data-category="{{ $category['id'] }}"><div class="category-image"><img src="{{ asset('images/figma/'.$category['image']) }}" alt="{{ $category['name'] }}" loading="lazy" width="400" height="256"><span>{{ $category['stock'] }} SKUs</span></div><h3>{{ $category['name'] }}</h3><p>{{ $category['description'] }}</p><strong>Explore <x-store-icon file="05f1c.svg" :size="10" /></strong></a>@endforeach</div>
+            <div class="container"><div class="section-heading"><div><p class="eyebrow">Full inventory spectrum</p><h2 id="categories-heading">Shop by Category</h2><p>Everything you need for electrical installations, plumbing networks, contractor power<br class="desktop-break"> equipment, and home improvement.</p></div><a href="#category-grid" class="text-link">View All {{ count($store['categories']) }} Categories <x-store-icon file="5bab9.svg" :size="16" /></a></div>
+                <div class="category-grid" id="category-grid">@foreach ($store['categories'] as $category)<a class="category-card" href="#products" data-category="{{ $category['id'] }}"><div class="category-image"><img src="{{ $category['image'] }}" alt="{{ $category['name'] }}" loading="lazy" width="400" height="256"><span>{{ $category['stock'] }} SKUs</span></div><h3>{{ $category['name'] }}</h3><p>{{ $category['description'] }}</p><strong>Explore <x-store-icon file="05f1c.svg" :size="10" /></strong></a>@endforeach</div>
             </div>
         </section>
         <section class="section products-section" id="products" aria-labelledby="products-heading">
@@ -55,3 +55,4 @@
     <script type="application/json" id="storefront-data">{!! json_encode(['products' => $store['products'], 'categories' => $store['categories'], 'services' => $store['services'], 'whatsapp' => $store['whatsapp'], 'assetBase' => asset('images/figma')], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 </body>
 </html>
+

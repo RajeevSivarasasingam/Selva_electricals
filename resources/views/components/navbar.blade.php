@@ -32,9 +32,10 @@
             </div>
             <button class="mobile-menu-button" id="mobile-menu-toggle" aria-expanded="false" aria-controls="main-navigation">Menu</button>
             <nav id="main-navigation" aria-label="Main navigation">
-                <a href="{{ route('home') }}#home" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a><a href="{{ route('home') }}#products" data-reset-products>Products</a><a href="{{ route('home') }}#categories">Categories</a><button data-product="{{ $store['products'][0]['id'] }}">Product Details</button><a href="{{ route('home') }}#services">Services</a><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About Us</a><a href="{{ route('home') }}#contact">Contact Us</a>
+                <a href="{{ route('home') }}#home" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a><a href="{{ route('home') }}#products" data-reset-products>Products</a><a href="{{ route('home') }}#categories">Categories</a>@if (count($store['products']))<button data-product="{{ $store['products'][0]['id'] }}">Product Details</button>@endif<a href="{{ route('home') }}#services">Services</a><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About Us</a><a href="{{ route('home') }}#contact">Contact Us</a>
             </nav>
             <div class="nav-actions"><a href="{{ route('login') }}">Login</a><a class="register-button" href="{{ route('register') }}">Register</a><a class="hotline" href="tel:+{{ $store['whatsapp'] }}">Hotline: {{ $store['whatsapp_display'] }}</a><button class="direct-quote" data-open="quote"><x-store-icon file="4d4ab.svg" :size="13" /> Request Direct Quote</button></div>
         </div>
     </div>
 </header>
+

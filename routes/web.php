@@ -1,11 +1,31 @@
 <?php
 
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\StorefrontController;
+use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{ProductController,QuotationController};
 
 Route::get('/', StorefrontController::class)->name('home');
 Route::get('/about', [StorefrontController::class, 'about'])->name('about');
 Route::get('/login', [StorefrontController::class, 'auth'])->name('login');
 Route::get('/register', [StorefrontController::class, 'auth'])->name('register');
-Route::prefix('api')->group(function () { Route::get('/products', [ProductController::class, 'index']); Route::get('/products/{product}', [ProductController::class, 'show']); Route::post('/quotations', [QuotationController::class, 'store']); });
+Route::prefix('api')->group(function () {
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{product}', [ProductController::class, 'show']);
+    Route::post('/quotations', [QuotationController::class, 'store']);
+});
+
+Route::post('/login', [SessionController::class, 'store'])->middleware('throttle:6,1')->name('login.store');
+Route::post('/register', [SessionController::class, 'register'])->middleware('throttle:6,1')->name('register.store');
+Route::post('/logout', [SessionController::class, 'destroy'])->middleware('auth')->name('logout');
+Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureAdmin::class])->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->defaults('page', 'dashboard')->name('dashboard');
+    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
+    Route::post('/products', [AdminController::class, 'storeProduct'])->name('products.store');
+    foreach (['products', 'categories', 'orders', 'users'] as $page) {
+        Route::get('/'.$page, [AdminController::class, 'index'])->defaults('page', $page)->name($page);
+    }
+});

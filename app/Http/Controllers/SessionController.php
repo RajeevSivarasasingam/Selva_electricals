@@ -27,12 +27,14 @@ class SessionController extends Controller
     public function register(Request $request): RedirectResponse
     {
         $data = $request->validate([
+            'phone' => ['nullable', 'string', 'max:30', 'regex:/^[0-9+() .-]+$/'],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:12', 'max:128'],
         ]);
         $user = User::create([
+            'phone' => $data['phone'] ?? null,
             'name' => $data['first_name'].' '.$data['last_name'],
             'email' => $data['email'],
             'password' => $data['password'],

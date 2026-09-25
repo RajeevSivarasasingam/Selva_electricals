@@ -14,8 +14,8 @@ if (dataElement) {
     }
     let state = normalizeState(data.userId ? data.savedState : storedState, data.products);
     let saveQueue = Promise.resolve();
-    let currentCategory = 'all';
-    let currentQuery = '';
+    let currentCategory = new URL(location.href).searchParams.get('category') || 'all';
+    let currentQuery = new URL(location.href).searchParams.get('q') || '';
     let activePanel = '';
     let returnFocus;
     let toastTimeout;
@@ -148,6 +148,7 @@ if (dataElement) {
     function addToCart(id) {
         const product = productsById.get(id);
         if (!product) return;
+        if (product.in_stock === false) { notify('This product is out of stock. Please contact us for availability.'); return; }
         const quantity = state.cart[id] || 0;
         if (quantity >= MAX_QUANTITY) {
             notify('For quantities above 99, please request a bulk quotation.');
@@ -295,6 +296,14 @@ if (dataElement) {
     }
 
     function applyFilters(scroll = false) {
+        if (!document.querySelector('#products')) {
+            const url = new URL(data.homeUrl);
+            url.searchParams.set('category', currentCategory);
+            url.searchParams.set('q', currentQuery);
+            url.hash = 'products';
+            location.assign(url);
+            return;
+        }
         const matches = filterProducts(data.products, currentQuery, currentCategory);
         const visibleIds = new Set(matches.map(product => product.id));
         document.querySelectorAll('[data-product-card]').forEach(card => { card.hidden = !visibleIds.has(card.dataset.productCard); });
@@ -322,6 +331,12 @@ if (dataElement) {
         document.querySelector('#browse-toggle').setAttribute('aria-expanded', 'false');
         closeDialogs();
         applyFilters(true);
+    }
+
+    if (document.querySelector('#products') && (currentQuery || currentCategory !== 'all')) {
+        document.querySelector('#search-query').value = currentQuery;
+        document.querySelector('#search-category').value = currentCategory;
+        applyFilters();
     }
 
     function restoreCartFocus(id, kind, oldIndex) {
@@ -377,7 +392,7 @@ if (dataElement) {
             setCategory('all');
         } else if (target.hasAttribute('data-continue-shopping')) {
             closeDialogs();
-            document.querySelector('#products').scrollIntoView();
+            if (document.querySelector('#products')) document.querySelector('#products').scrollIntoView(); else location.assign(data.homeUrl + '#products');
         } else if (target.dataset.service) {
             openQuote(target.dataset.service);
         }
@@ -433,7 +448,7 @@ if (dataElement) {
         });
     });
 
-    document.querySelector('#quotation-form').addEventListener('submit', event => {
+    document.querySelector('#quotation-form').addEventListener('submit', async event => {
         event.preventDefault();
         const form = event.currentTarget;
         if (!form.reportValidity()) return;
@@ -455,12 +470,41 @@ if (dataElement) {
             '', String(fields.get('items')).trim(), '',
             'Please confirm stock, final prices, and delivery options.'
         ].join('\n');
-        window.open(whatsappUrl(message), '_blank', 'noopener,noreferrer');
+        const submit = form.querySelector('[type="submit"]');
+        const result = document.querySelector('#quote-result');
+        const followUp = document.querySelector('#quote-whatsapp');
+        submit.disabled = true;
+        result.textContent = 'Saving your request…';
+        followUp.hidden = true;
+        try {
+            const response = await fetch(data.quotationUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': data.csrfToken },
+                body: JSON.stringify({
+                    name: String(fields.get('name')).trim(),
+                    phone: String(fields.get('phone')).trim(),
+                    message,
+                    items: data.products.filter(product => state.cart[product.id]).map(product => ({
+                        product_slug: product.id, product_name: product.name, quantity: state.cart[product.id],
+                    })),
+                }),
+            });
+            const body = await response.json();
+            if (!response.ok) throw new Error(Object.values(body.errors || {}).flat()[0] || 'Unable to save your request. Please try again.');
+            result.textContent = 'Request #Q' + body.id + ' received. Our team will contact you.';
+            followUp.href = whatsappUrl('Quotation reference #Q' + body.id + '\n' + message);
+            followUp.hidden = false;
+            form.reset();
+        } catch (error) {
+            result.textContent = error.message || 'Connection failed. Your request has not been confirmed.';
+        } finally {
+            submit.disabled = false;
+        }
     });
     document.querySelector('#quotation-form').addEventListener('input', event => event.target.setCustomValidity?.(''));
 
     window.addEventListener('storage', event => {
-        if (event.key !== storageKey && event.key !== null) return;
+        if (data.userId || (event.key !== storageKey && event.key !== null)) return;
         try { state = normalizeState(JSON.parse(event.newValue), data.products); } catch { state = normalizeState(null, data.products); }
         updateCounters();
         if (dialog.open && activePanel === 'cart') renderCart();
@@ -506,6 +550,7 @@ if (categoryDropdown) {
         if (!categoryDropdown.contains(event.relatedTarget)) closeCategories();
     });
 }
+
 
 
 

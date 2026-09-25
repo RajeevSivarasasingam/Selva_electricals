@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'name' => 'Selva Electricals Hardware',
+    'name' => 'Selva Electricals',
     'address' => 'No 21, Palaly Road, Thirunelveli, Jaffna.',
-    'phone' => '+94 11 234 5678',
-    'phone_link' => '+94112345678',
-    'whatsapp' => '94771234567',
-    'whatsapp_display' => '+94 77 123 4567',
-    'email' => 'orders@selvaelectricals.lk',
+    'phone' => '021 221 25955',
+    'phone_link' => '02122125955',
+    'whatsapp' => '94777642771',
+    'whatsapp_display' => '077 764 2771',
+    'email' => 'selvahel@gmail.com',
     'hours' => 'Mon - Sat: 8:00 AM – 7:30 PM | Sun: 8:30 AM – 1:30 PM',
     'categories' => [
         [

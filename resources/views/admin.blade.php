@@ -17,7 +17,7 @@
             @endforeach
         </nav>
         <a class="admin-store-link" href="{{ route('home') }}">← View storefront</a>
-        <div class="admin-sidebar-note">Selva Electricals Hardware<br><small>Jaffna, Sri Lanka</small></div>
+        <div class="admin-sidebar-note">Selva Electricals<br><small>Jaffna, Sri Lanka</small></div>
     </aside>
     <div class="admin-workspace">
         <header class="admin-topbar">
@@ -37,7 +37,7 @@
                 @if ($page === 'orders')<p class="admin-notice">These records are quotation requests, not paid checkout orders.</p>@endif
                 <div id="admin-results"><div class="admin-table-wrap"><table class="admin-table">
                     <thead><tr>
-                        @foreach (match ($page) { 'products' => ['Product', 'Category', 'Price', 'Availability'], 'categories' => ['Category', 'Description', 'Products'], 'users' => ['Name', 'Email', 'Role', 'Joined'], default => ['Reference', 'Customer', 'Contact', 'Status', 'Received'] } as $heading)<th scope="col">{{ $heading }}</th>@endforeach
+                        @foreach (match ($page) { 'products' => ['Product', 'Category', 'Price', 'Availability'], 'categories' => ['Category', 'Description', 'Products'], 'users' => ['Name', 'Email', 'Phone', 'Role', 'Joined'], default => ['Reference', 'Customer', 'Contact', 'Status', 'Received'] } as $heading)<th scope="col">{{ $heading }}</th>@endforeach
                     @if ($page !== 'dashboard')<th scope="col">Actions</th>@endif</tr></thead>
                     <tbody>
                     @forelse ($records as $record)
@@ -47,7 +47,7 @@
                         @elseif ($page === 'categories')
                             <td><strong>{{ $record->name }}</strong><small>{{ $record->slug }}</small></td><td>{{ $record->description }}</td><td>{{ $record->products_count }}</td>
                         @elseif ($page === 'users')
-                            <td><strong>{{ $record->name }}</strong></td><td>{{ $record->email }}</td><td><span class="admin-badge">{{ $record->is_admin ? 'Admin' : 'Customer' }}</span></td><td>{{ $record->created_at?->format('d M Y') }}</td>
+                            <td><strong>{{ $record->name }}</strong></td><td>{{ $record->email }}</td><td>{{ $record->phone ?: 'Not provided' }}</td><td><span class="admin-badge">{{ $record->is_admin ? 'Admin' : 'Customer' }}</span></td><td>{{ $record->created_at?->format('d M Y') }}</td>
                         @else
                             <td><strong>#Q{{ str_pad($record->id, 4, '0', STR_PAD_LEFT) }}</strong></td><td>{{ $record->name }}@if ($page === 'orders')<details class="admin-order-details"><summary>View request</summary><p>{{ $record->message ?: 'No additional message.' }}</p><ul>@forelse ($record->items as $item)<li>{{ $item->product_name }} × {{ $item->quantity }}</li>@empty<li>No product items supplied.</li>@endforelse</ul></details>@endif</td><td>{{ $record->phone }}<small>{{ $record->email }}</small></td><td><span class="admin-badge">{{ ucfirst($record->status) }}</span></td><td class="admin-nowrap">{{ $record->created_at?->format('d M Y') }}</td>
                         @endif
@@ -78,5 +78,7 @@
 @include('admin-interactions')
 </body>
 </html>
+
+
 
 

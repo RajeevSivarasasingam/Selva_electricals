@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountStateController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\QuotationController;
@@ -35,3 +36,5 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureAdmin::class])
         Route::get('/'.$page, [AdminController::class, 'index'])->defaults('page', $page)->name($page);
     }
 });
+
+Route::put('/account/state', [AccountStateController::class, 'update'])->middleware('auth')->name('account.state');

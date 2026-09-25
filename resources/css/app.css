@@ -736,3 +736,30 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .admin-delete-confirm { background: #b42332; color: white; }
 #admin-results[aria-busy="true"] { opacity: .65; }
 @media (prefers-reduced-motion: reduce) { .admin-action-icon { transition: none; } }
+
+.store-account-controls { display: flex; align-items: center; gap: 10px; }
+.store-profile { position: relative; color: var(--primary-navy); }
+.store-profile summary { display: flex; gap: 8px; align-items: center; cursor: pointer; list-style: none; font-size: 12px; font-weight: 700; }
+.store-profile-name { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.store-profile-menu { position: absolute; top: calc(100% + 12px); right: 0; width: min(280px, 85vw); background: white; padding: 20px; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 12px 30px #000e2226; z-index: 60; overflow-wrap: anywhere; font-size: 13px; }
+.store-profile-menu p { margin-top: 10px; }
+.store-profile-menu a { display: block; margin-top: 14px; font-weight: 700; color: #805100; }
+@media (max-width: 600px) { .store-profile-name { display: none; } .store-account-controls { gap: 6px; } }
+
+.store-brand { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; color: var(--primary-navy); }
+.store-brand .logo { width: 64px; height: 64px; }
+.store-brand-name { font-size: 21px; font-weight: 800; line-height: 1.15; letter-spacing: -.5px; }
+.store-brand-name > span { display: block; }
+.store-brand:focus-visible { outline: 3px solid var(--accent-yellow); outline-offset: 4px; border-radius: 6px; }
+.header-main .search-form { min-width: 0; }
+@media (min-width: 601px) and (max-width: 1000px) {
+    .header-main { flex-wrap: wrap; padding-block: 12px; }
+    .header-main .search-form { order: 3; flex-basis: 100%; max-width: none; }
+    .header-main .header-actions { margin-left: auto; }
+}
+@media (max-width: 600px) {
+    .store-brand { gap: 8px; }
+    .store-brand .logo { width: 52px; height: 52px; }
+    .store-brand-name { font-size: 17px; letter-spacing: -.3px; }
+    .header-main .header-actions { gap: 10px; flex-wrap: wrap; }
+}

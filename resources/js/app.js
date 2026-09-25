@@ -12,7 +12,8 @@ if (dataElement) {
     } catch {
         storedState = null;
     }
-    let state = normalizeState(storedState, data.products);
+    let state = normalizeState(data.userId ? data.savedState : storedState, data.products);
+    let saveQueue = Promise.resolve();
     let currentCategory = 'all';
     let currentQuery = '';
     let activePanel = '';
@@ -93,14 +94,44 @@ if (dataElement) {
     }
 
     function saveState() {
-        try {
-            localStorage.setItem(storageKey, JSON.stringify(state));
-        } catch {
-            notify('Browser storage is unavailable. Your selections are saved for this visit only.');
+        if (data.userId) {
+            const payload = JSON.stringify({ ...state, user_id: data.userId });
+            saveQueue = saveQueue.catch(() => {}).then(async () => {
+                const response = await fetch(data.stateUrl, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': data.csrfToken },
+                    body: payload,
+                    keepalive: true,
+                });
+                if (!response.ok) throw new Error('Account save failed');
+            });
+            saveQueue.catch(() => notify('Your selections could not be saved. Check your connection and try again before leaving.'));
+        } else {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(state));
+            } catch {
+                notify('Browser storage is unavailable. Your selections are saved for this visit only.');
+            }
         }
         updateCounters();
     }
 
+    document.querySelectorAll('[data-store-logout]').forEach(form => {
+        form.addEventListener('submit', async event => {
+            if (!data.userId) return;
+            event.preventDefault();
+            const button = form.querySelector('button');
+            button.disabled = true;
+            try {
+                saveState();
+                await saveQueue;
+                form.submit();
+            } catch {
+                button.disabled = false;
+                notify('Could not save your selections. Please try signing out again.');
+            }
+        });
+    });
     function updateCounters() {
         const totals = cartTotals(state.cart, data.products);
         document.querySelectorAll('[data-cart-count]').forEach(node => { node.textContent = totals.count; });
@@ -475,5 +506,6 @@ if (categoryDropdown) {
         if (!categoryDropdown.contains(event.relatedTarget)) closeCategories();
     });
 }
+
 
 

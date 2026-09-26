@@ -17,6 +17,7 @@
     </main>
     <x-store-footer :store="$store" />
     <x-store-dialogs :store="$store" />
-</body>
+<div class="toast" id="store-toast" role="status" aria-live="polite" hidden></div><x-storefront-data :store="$store" /></body>
 </html>
+
 

@@ -22,7 +22,7 @@
     <div class="admin-workspace">
         <header class="admin-topbar">
             <span>Store management</span>
-            <div class="admin-welcome">Welcome, Admin <details class="admin-profile"><summary><span class="admin-avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span>{{ auth()->user()->name }}</span><span aria-hidden="true">⌄</span></summary><div class="admin-profile-card"><strong>{{ auth()->user()->name }}</strong><p>{{ auth()->user()->email }}</p><p>Administrator</p><form action="{{ route('logout') }}" method="post">@csrf<button type="submit">Sign out</button></form></div></details><form action="{{ route('logout') }}" method="post">@csrf<button type="submit" class="admin-action-icon" aria-label="Sign out" title="Sign out"><x-admin-icon name="logout" /></button></form></div>
+            <div class="admin-welcome">Welcome, Admin <details class="admin-profile"><summary><span class="admin-avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span>{{ auth()->user()->name }}</span><span aria-hidden="true">⌄</span></summary><div class="admin-profile-card"><strong>{{ auth()->user()->name }}</strong><p>{{ auth()->user()->email }}</p><p>Administrator</p><a href="{{ route('profile.edit') }}">Edit profile</a><form action="{{ route('logout') }}" method="post">@csrf<button type="submit">Sign out</button></form></div></details><form action="{{ route('logout') }}" method="post">@csrf<button type="submit" class="admin-action-icon" aria-label="Sign out" title="Sign out"><x-admin-icon name="logout" /></button></form></div>
         </header>
         <main id="admin-main" class="admin-main">
             <div class="admin-page-heading"><div><p class="admin-eyebrow">YOUR STORE AT A GLANCE</p><h1>{{ ucfirst($page) }}</h1><p>{{ ['dashboard' => 'Welcome back. Here is what is happening at your store.', 'products' => 'Browse your database product catalog and availability.', 'categories' => 'Explore your catalog categories and product counts.', 'orders' => 'Customer quotation requests received by the store.', 'users' => 'Registered customers and administrator accounts.'][$page] }}</p></div>@if (in_array($page, ['products', 'categories']))<button type="button" class="button button-amber" data-open-catalog>+ Add {{ $page === 'products' ? 'product' : 'category' }}</button>@endif<span class="admin-date">{{ now()->format('d M Y') }}</span></div>
@@ -78,6 +78,7 @@
 @include('admin-interactions')
 </body>
 </html>
+
 
 
 

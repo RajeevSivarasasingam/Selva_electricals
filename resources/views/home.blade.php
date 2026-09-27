@@ -52,7 +52,7 @@
     <x-store-dialogs :store="$store" />
     <div class="toast" id="store-toast" role="status" aria-live="polite" hidden></div>
     <button class="back-to-top" type="button" id="back-to-top" aria-label="Back to top">↑</button>
-    <script type="application/json" id="storefront-data">{!! json_encode(['products' => $store['products'], 'categories' => $store['categories'], 'services' => $store['services'], 'whatsapp' => $store['whatsapp'], 'assetBase' => asset('images/figma'), 'userId' => auth()->id(), 'savedState' => auth()->check() ? ['cart' => auth()->user()->cart ?? [], 'wishlist' => auth()->user()->wishlist ?? []] : null, 'stateUrl' => route('account.state'), 'csrfToken' => csrf_token()], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    <x-storefront-data :store="$store" />
 </body>
 </html>
 

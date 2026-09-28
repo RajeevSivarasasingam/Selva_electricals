@@ -25,3 +25,18 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Local credentials and backups; keep deployment templates versioned.
+.env.*
+!.env.example
+!.env.production.example
+*.sql
+*.sql.gz
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.bak
+*.orig
+/coverage/
+/playwright-report/
+/test-results/

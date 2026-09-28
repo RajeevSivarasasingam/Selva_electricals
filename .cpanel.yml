@@ -1,8 +1,28 @@
 ---
 deployment:
   tasks:
+    # Production Laravel application
     - export APPPATH=/home1/storeselva/selva-electricals/
+    - export PUBLICPATH=/home1/storeselva/public_html/
+
+    # Laravel application code
     - /bin/cp -R app $APPPATH
+    - /bin/cp -R bootstrap $APPPATH
     - /bin/cp -R config $APPPATH
+    - /bin/cp -R database $APPPATH
     - /bin/cp -R resources $APPPATH
     - /bin/cp -R routes $APPPATH
+
+    # Root Laravel files
+    - /bin/cp artisan $APPPATH
+    - /bin/cp composer.json $APPPATH
+    - /bin/cp composer.lock $APPPATH
+    - /bin/cp package.json $APPPATH
+    - /bin/cp vite.config.js $APPPATH
+
+    # Public static assets
+    - /bin/cp -R public/images $PUBLICPATH
+
+    # Vite production build
+    - /bin/cp -R public/build $APPPATH/public/
+    - /bin/cp -R public/build $PUBLICPATH

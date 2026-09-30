@@ -20,6 +20,9 @@ deployment:
     - /bin/cp package.json $APPPATH
     - /bin/cp vite.config.js $APPPATH
 
+#
+
+
     # Public static assets
     - /bin/cp -R public/images $PUBLICPATH
 

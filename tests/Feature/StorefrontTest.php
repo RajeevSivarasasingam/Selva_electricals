@@ -18,7 +18,7 @@ test('the storefront renders its complete catalog and Jaffna contact details', f
         ->assertSee('Shop by Category')
         ->assertSee('Featured Products')
         ->assertSee('More Than Just a Hardware Shop')
-        ->assertSee('What Our Clients Say')
+        ->assertDontSee('What Our Clients Say')
         ->assertSee(config('storefront.address'))
         ->assertDontSee('Our Colombo Counter');
 
@@ -57,3 +57,4 @@ test('storefront interactions have accessible controls and an empty initial esti
         ->assertSee('id="storefront-data"', false)
         ->assertSee('https://wa.me/'.config('storefront.whatsapp'), false);
 });
+
